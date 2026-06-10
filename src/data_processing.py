@@ -35,15 +35,20 @@ def filter_data(books, users, ratings,
                 min_user_ratings=DATA_PROCESSING['min_user_ratings'], 
                 config=DATA_CONFIG):
     """Filter data based on minimum ratings thresholds."""
+    # MATDIS: Himpunan - mengelompokkan rating, index-nya adalah himpunan ISBN unik                
     book_ratings_count = ratings.groupby(config['ratings']['ISBN']).size()
+    # MATDIS: Himpunan - mengelompokkan rating, index-nya adalah himpunan user ID unik                
     user_ratings_count = ratings.groupby(config['ratings']['user_id']).size()
 
+    # MATDIS: Subset - mempertahankan hanya buku yang memiliki rating >= threshold                
     valid_books = book_ratings_count[book_ratings_count >= min_book_ratings].index
+    # MATDIS: Subset - mempertahankan hanya user yang memiliki rating >= threshold                
     valid_users = user_ratings_count[user_ratings_count >= min_user_ratings].index
 
+    # MATDIS: Irisan Himpunan - menggabungkan dua kondisi keanggotaan dengan operator AND               
     filtered_ratings = ratings[
-        (ratings[config['ratings']['ISBN']].isin(valid_books)) &
-        (ratings[config['ratings']['user_id']].isin(valid_users))
+        (ratings[config['ratings']['ISBN']].isin(valid_books)) & # MATDIS: Keanggotaan (∈)
+        (ratings[config['ratings']['user_id']].isin(valid_users))  # MATDIS: Keanggotaan (∈)
     ].copy()
 
     filtered_books = books[books[config['books']['ISBN']].isin(valid_books)].copy()
